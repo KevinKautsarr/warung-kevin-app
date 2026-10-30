@@ -1,0 +1,37 @@
+name: warung_kevin
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  shared_preferences: ^2.5.6
+  flutter_map: ^8.3.2
+  latlong2: ^0.10.1
+  url_launcher: ^6.3.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  # flutter_launcher_icons: hanya dev_dependency, tidak masuk ke APK release
+  flutter_launcher_icons: ^0.14.3
+
+# Konfigurasi ikon launcher untuk Android
+# Jalankan: dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/logo_icon.png"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
