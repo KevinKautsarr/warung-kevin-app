@@ -7,6 +7,7 @@ import 'login_page.dart';
 import 'maps_page.dart';
 import 'payment_page.dart';
 import 'product.dart';
+import 'riwayat_page.dart';
 import 'sms_page.dart';
 import 'update_user_page.dart';
 
@@ -186,6 +187,12 @@ class _DashboardPageState extends State<DashboardPage> {
           MaterialPageRoute(builder: (_) => const MapsPage()),
         );
         break;
+      case 'riwayat':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const RiwayatPage()),
+        );
+        break;
       case 'update':
         Navigator.push(
           context,
@@ -293,6 +300,16 @@ class _DashboardPageState extends State<DashboardPage> {
                     Icon(Icons.location_on, color: AppColors.sekunder, size: 20),
                     SizedBox(width: 10),
                     Text('Lokasi / Maps'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'riwayat',
+                child: Row(
+                  children: [
+                    Icon(Icons.receipt_long_outlined, color: AppColors.sekunder, size: 20),
+                    SizedBox(width: 10),
+                    Text('Riwayat Pesanan'),
                   ],
                 ),
               ),

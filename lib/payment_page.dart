@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
 import 'product.dart';
+import 'riwayat.dart';
 
 // Halaman pembayaran dengan ringkasan pesanan, tombol cepat nominal, dan dialog sukses
 class PaymentPage extends StatefulWidget {
@@ -20,6 +21,9 @@ class PaymentPage extends StatefulWidget {
 class _PaymentPageState extends State<PaymentPage> {
   final _bayarController = TextEditingController();
 
+  // Flag untuk pencegahan penyimpanan ganda jika tombol bayar ditekan berulang
+  bool _sudahDisimpan = false;
+
   int get _jumlahBayar => int.tryParse(_bayarController.text) ?? 0;
   int get _kembalian => _jumlahBayar - widget.total;
 
@@ -38,6 +42,46 @@ class _PaymentPageState extends State<PaymentPage> {
   void dispose() {
     _bayarController.dispose();
     super.dispose();
+  }
+
+  // Memproses pembayaran: bangun Transaksi, simpan ke riwayat SATU KALI saja, lalu tampilkan dialog sukses
+  void _prosesBayar() {
+    // Pencegahan penyimpanan ganda jika tombol ditekan berulang kali
+    if (_sudahDisimpan) return;
+    setState(() {
+      _sudahDisimpan = true;
+    });
+
+    // Bangun daftar ItemRiwayat dari pesanan yang aktif
+    final items = <ItemRiwayat>[];
+    widget.pesanan.forEach((nama, jumlah) {
+      if (jumlah > 0) {
+        final produk = daftarProduk.firstWhere(
+          (p) => p.nama == nama,
+          orElse: () => Product(nama: nama, deskripsi: '', harga: 0, gambar: ''),
+        );
+        items.add(ItemRiwayat(
+          nama: nama,
+          harga: produk.harga,
+          jumlah: jumlah,
+        ));
+      }
+    });
+
+    final transaksi = Transaksi(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      waktu: DateTime.now(),
+      items: items,
+      total: widget.total,
+      uangDiterima: _jumlahBayar,
+      kembalian: _kembalian,
+    );
+
+    // Simpan riwayat transaksi ke storage via SharedPreferences
+    RiwayatStorage.simpan(transaksi);
+
+    // Tampilkan dialog konfirmasi sukses pembayaran
+    _tampilkanDialogSukses();
   }
 
   // Dialog sukses pembayaran menampilkan total, uang diterima, dan kembalian
@@ -358,7 +402,7 @@ class _PaymentPageState extends State<PaymentPage> {
 
                     // Tombol Bayar
                     ElevatedButton(
-                      onPressed: cukupUang ? _tampilkanDialogSukses : null,
+                      onPressed: (cukupUang && !_sudahDisimpan) ? _prosesBayar : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.utama,
                         foregroundColor: Colors.white,
